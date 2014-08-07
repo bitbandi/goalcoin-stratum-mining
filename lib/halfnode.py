@@ -26,6 +26,9 @@ if settings.COINDAEMON_ALGO == 'scrypt':
 elif settings.COINDAEMON_ALGO == 'quark':
     log.debug("########################################### Loading Quark Support #########################################################")
     import quark_hash
+elif settings.COINDAEMON_ALGO == 'goalcoin':
+    log.debug("########################################### Loading GoalCoin Support #########################################################")
+    import goalcoin_hash
 else: 
     log.debug("########################################### Loading SHA256 Support ######################################################")
 
@@ -239,6 +242,8 @@ class CBlock(object):
             self.scrypt = None
         elif settings.COINDAEMON_ALGO == 'quark':
             self.quark = None
+        elif settings.COINDAEMON_ALGO == 'goalcoin':
+            self.goalcoin = None
         elif settings.COINDAEMON_ALGO == 'riecoin':
             self.riecoin = None
         else: pass
@@ -306,6 +311,18 @@ class CBlock(object):
                 r.append(struct.pack("<I", self.nNonce))
                 self.quark = uint256_from_str(quark_hash.getPoWHash(''.join(r)))
              return self.quark
+    elif settings.COINDAEMON_ALGO == 'goalcoin':
+         def calc_goalcoin(self):
+             if self.goalcoin is None:
+                r = []
+                r.append(struct.pack("<i", self.nVersion))
+                r.append(ser_uint256(self.hashPrevBlock))
+                r.append(ser_uint256(self.hashMerkleRoot))
+                r.append(struct.pack("<I", self.nTime))
+                r.append(struct.pack("<I", self.nBits))
+                r.append(struct.pack("<I", self.nNonce))
+                self.goalcoin = uint256_from_str(goalcoin_hash.getPoWHash(''.join(r)))
+             return self.goalcoin
     elif settings.COINDAEMON_ALGO == 'riecoin':
          def calc_riecoin(self):
              if self.riecoin is None:
@@ -339,6 +356,8 @@ class CBlock(object):
             self.calc_scrypt()
         elif settings.COINDAEMON_ALGO == 'quark':
             self.calc_quark()
+        elif settings.COINDAEMON_ALGO == 'goalcoin':
+            self.calc_goalcoin()
         else:
             self.calc_sha256()
 
@@ -355,6 +374,9 @@ class CBlock(object):
                 return False
         elif settings.COINDAEMON_ALGO == 'quark':
             if self.quark > target:
+                return False
+        elif settings.COINDAEMON_ALGO == 'goalcoin':
+            if self.goalcoin > target:
                 return False
         else:
            if self.sha256 > target:

@@ -9,6 +9,8 @@ elif settings.COINDAEMON_ALGO  == 'scrypt-jane':
     import yac_scrypt
 elif settings.COINDAEMON_ALGO == 'quark':
     import quark_hash
+elif settings.COINDAEMON_ALGO == 'goalcoin':
+    import goalcoin_hash
 elif settings.COINDAEMON_ALGO == 'skeinhash':
     import skeinhash
 else: pass
@@ -156,6 +158,8 @@ class TemplateRegistry(object):
             diff1 = 0x0000ffff00000000000000000000000000000000000000000000000000000000
         elif settings.COINDAEMON_ALGO == 'quark':
             diff1 = 0x000000ffff000000000000000000000000000000000000000000000000000000
+        elif settings.COINDAEMON_ALGO == 'goalcoin':
+            diff1 = 0x0000ffff00000000000000000000000000000000000000000000000000000000
         elif settings.COINDAEMON_ALGO == 'riecoin':
             return difficulty
         else:
@@ -259,6 +263,8 @@ class TemplateRegistry(object):
             hash_bin = yac_scrypt.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]), int(ntime, 16))
         elif settings.COINDAEMON_ALGO == 'quark':
             hash_bin = quark_hash.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
+        elif settings.COINDAEMON_ALGO == 'goalcoin':
+            hash_bin = goalcoin_hash.getPoWHash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
 	elif settings.COINDAEMON_ALGO == 'skeinhash':
             hash_bin = skeinhash.skeinhash(''.join([ header_bin[i*4:i*4+4][::-1] for i in range(0, 20) ]))
         else:
@@ -275,6 +281,8 @@ class TemplateRegistry(object):
         if settings.COINDAEMON_ALGO == 'scrypt' or settings.COINDAEMON_ALGO == 'scrypt-jane':
             header_hex = header_hex+"000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000"
         elif settings.COINDAEMON_ALGO == 'quark':
+            header_hex = header_hex+"000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000"
+        elif settings.COINDAEMON_ALGO == 'goalcoin':
             header_hex = header_hex+"000000800000000000000000000000000000000000000000000000000000000000000000000000000000000080020000"
         elif settings.COINDAEMON_ALGO == 'riecoin':
             header_hex = header_hex+"00000080000000000000000080030000"
